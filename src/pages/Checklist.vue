@@ -21,7 +21,9 @@
           li.item(v-for="item, index in categories[key]")
             b.item-name {{ item.name }}
             
-            input(v-if="editing", type="number", min=0, v-model.number="categories[key][index].count", max=100)
+            div(v-if="editing")
+              input(, type="number", min=0, v-model.number="categories[key][index].count", max=100)
+              a.remove-item(href="#", @click="removeItem(key, index)") X
             .item-info(v-else, :class="{ 'is-done': item.progress == item.count }")
               span.item-count {{ item.progress + ' / ' + item.count }}
               input.item-progress(type="range", v-model="categories[key][index].progress", value=0, min=0, step=1, :max="item.count")
@@ -84,6 +86,9 @@ export default {
       this.categories[category].push({ name, count, progress: 0 });
       this.new_items[category] = '';
       this.new_counts[category] = 1;
+    },
+    removeItem (category, itemIndex) {
+      this.categories[category].splice(itemIndex, 1);
     },
     getCategoryTotal (category) {
       return this.categories[category].reduce((total, item) => total + item.count, 0);
@@ -158,6 +163,11 @@ export default {
           flex: 1;
           margin-right: 10px;
           text-align: left;
+        }
+
+        .remove-item {
+          margin-left: 5px;
+          margin-right: 5px;
         }
 
         .item-info {
