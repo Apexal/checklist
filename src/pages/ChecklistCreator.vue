@@ -22,7 +22,11 @@
             span.item-count {{ item.count }}
         p.no-items-warning(v-else) No items yet!
 
-  code {{ encoded }}
+
+  p
+    code {{ encoded }}
+  
+  router-link(to="/") Home
 </template>
 
 <script>

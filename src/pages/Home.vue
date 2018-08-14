@@ -1,6 +1,8 @@
 <template lang="pug">
   #home
     h2 Home Page
+
+    router-link(to="/checklist/create") Create
 </template>
 
 <script>
