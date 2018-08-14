@@ -1,6 +1,8 @@
 <template lang="pug">
 #checklist
   h1 View Checklist
+
+  router-link(:to="{ path: '/checklist/create', query: { list: encoded } }") Edit
 </template>
 
 <script>
@@ -22,6 +24,9 @@ export default {
       
     }
   },
+  computed: {
+    encoded () { return JSON.stringify(this.categories); }
+  }
 }
 </script>
 

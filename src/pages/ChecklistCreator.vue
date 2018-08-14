@@ -27,7 +27,7 @@
     code {{ encoded }}
   
   router-link(to="/") Home
-  router-link(:to="{ path: '/checklist/create', query: { list: encoded } }") View
+  router-link(:to="{ path: '/checklist', query: { list: encoded } }") View
 </template>
 
 <script>
