@@ -1,31 +1,50 @@
 <template lang="pug">
   #app
-    img#rpi-logo(alt="RPI logo", src="./assets/RPILogo.jpg")
-    HelloWorld(msg="Welcome to VueJS")
+    header
+      h1 College Move In Checklist Creator
+    main
+      router-view
+    footer
+      p Created by #[a(href="https://github.com/Apexal", target="_blank") Frank Matranga '22] under the #[b MIT License]
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
 export default {
-  name: 'app',
-  components: {
-    HelloWorld
-  }
+  name: 'app'
 }
 </script>
 
 <style lang="scss">
+body {
+  margin: 0;
+  padding: 0;
+}
+
 #app {
+  // From Vue
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 
-  #rpi-logo {
-    max-width: 200px;
+  margin-top: 0;
+  padding: 0;
+
+  header {
+    background-color: rgb(243, 243, 243);
+
+    h1 {
+      margin: 0;
+      padding: 40px;
+      font-size: 2.5em;
+    }
+  }
+
+  footer {
+    padding-top: 30px;
+    background-color: rgb(243, 243, 243);
+    padding-bottom: 30px;
   }
 }
 </style>
