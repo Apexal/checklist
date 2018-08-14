@@ -1,7 +1,7 @@
 <template lang="pug">
   #app
     header
-      h1 College Move In Checklist
+      h1 College Move In Checklist 📑
     main
       router-view
     footer
