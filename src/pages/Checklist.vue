@@ -21,10 +21,11 @@
           li.item(v-for="item, index in categories[key]")
             b.item-name {{ item.name }}
             
-            span.item-count(:class="{ 'is-done': item.progress == item.count }") {{ editing ? '' : item.progress + ' / ' }}{{ item.count }}
-            .item-info(v-if="!editing")
+            input(v-if="editing", type="number", min=0, v-model.number="categories[key][index].count", max=100)
+            .item-info(v-else, :class="{ 'is-done': item.progress == item.count }")
+              span.item-count {{ item.progress + ' / ' + item.count }}
               input.item-progress(type="range", v-model="categories[key][index].progress", value=0, min=0, step=1, :max="item.count")
-              span.item-done(:class="{ 'is-done': item.progress == item.count }") {{ item.progress == item.count ? '✅' : '❌' }}
+              span.item-done {{ item.progress == item.count ? '✅' : '❌' }}
         p.no-items-warning(v-else) No items yet!
 
 
@@ -158,25 +159,30 @@ export default {
           margin-right: 10px;
           text-align: left;
         }
-        .item-count {
-          flex: 1;
-        }
 
         .item-info {
+          .item-count {
+            flex: 1;
+          }
           .item-progress {
             flex: 1;
           }
 
           .item-done {
             font-size: 1.4em;
-
             color: red;
           }
         }
 
         .is-done {
-          color: #8fda8d;
-          font-weight: bold;
+          .item-count {
+            color: #8fda8d;
+            font-weight: bold;
+          }
+
+          .item-done {
+            color: #8fda8d;
+          }
         }
       }
 
