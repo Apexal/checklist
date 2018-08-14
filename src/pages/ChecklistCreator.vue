@@ -1,5 +1,5 @@
 <template lang="pug">
-#checklist
+#checklist-creator
   h1.title Create New Checklist
 
   .categories
@@ -35,7 +35,6 @@ import Vue from 'vue';
 
 export default {
   name: 'checklist-creator',
-  components: {},
   data () {
     return {
       new_category: '',
