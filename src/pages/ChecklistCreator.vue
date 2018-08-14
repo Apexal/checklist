@@ -27,6 +27,7 @@
     code {{ encoded }}
   
   router-link(to="/") Home
+  router-link(:to="{ path: '/checklist/create', query: { list: encoded } }") View
 </template>
 
 <script>
@@ -42,6 +43,18 @@ export default {
       new_counts: {},
       categories: {}
     }; 
+  },
+  created () {
+    if (this.$route.query.list) {
+      const decoded = JSON.parse(decodeURI(this.$route.query.list));
+    
+      for(const category_name in decoded) {
+        
+        Vue.set(this.categories, category_name, decoded[category_name]);
+        Vue.set(this.new_items, category_name, '');
+        Vue.set(this.new_counts, category_name, 1);
+      }
+    }
   },
   methods: {
     addCategory (category_name) {
