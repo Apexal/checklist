@@ -1,6 +1,6 @@
 <template lang="pug">
 #checklist-creator
-  h1.title {{ $route.params.action }} Checklist
+  //h1.title {{ $route.params.action }} Checklist
 
   .categories(:class="{ 'is-editing': editing }")
     .new-category(v-show="editing")
@@ -102,6 +102,7 @@ export default {
 
 .categories {
   margin: 0 auto;
+  margin-top: 30px;
   max-width: 600px;
 
   .category {
@@ -130,6 +131,10 @@ export default {
     .items {
       border: 1px solid #8fda8d;
       border-top: 1px solid #8fda8d;
+
+      > ul {
+        padding-left: 20px;
+      }
 
       .item {
         display: flex;
