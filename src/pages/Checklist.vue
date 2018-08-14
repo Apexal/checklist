@@ -1,11 +1,11 @@
 <template lang="pug">
 #checklist-creator
-  //h1.title {{ $route.params.action }} Checklist
-
   .categories(:class="{ 'is-editing': editing }")
-    .new-category(v-show="editing")
-      input(type="text", placeholder="New category", v-model="new_category", @keyup.enter="addCategory(new_category)", minlength=0, maxlength=100)
-      button(type="button", @click="addCategory(new_category)") Add Category
+    .categories-header
+      h1.title {{ Object.keys(categories).length }} Categories
+      .new-category(v-show="editing")
+        input(type="text", placeholder="New category", v-model="new_category", @keyup.enter="addCategory(new_category)", minlength=0, maxlength=100)
+        button(type="button", @click="addCategory(new_category)") Add Category
   
     details.category(open, v-for="(value, key) in categories")
       summary.category-header
@@ -105,6 +105,19 @@ export default {
   margin-top: 30px;
   max-width: 600px;
 
+  .categories-header {
+    display: flex;
+    align-items: center;
+
+    .title {
+      flex: 1;
+      text-align: left;
+      margin: 0;
+    }
+
+    margin-bottom: 10px;
+  }
+
   .category {
     .category-header {
       background-color: #8fda8d;
@@ -115,6 +128,7 @@ export default {
       color: white;
 
       display: flex;
+      align-items: center;
 
       .category-name {
         flex: 1;
