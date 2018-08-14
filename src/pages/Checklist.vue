@@ -18,9 +18,13 @@
       
       .items
         ul(v-if="categories[key].length > 0")
-          li(v-for="item in categories[key]")
+          li.item(v-for="item, index in categories[key]")
             b.item-name {{ item.name }}
-            span.item-count {{ item.count }}
+            
+            span.item-count(:class="{ 'is-done': item.progress == item.count }") {{ editing ? '' : item.progress + ' / ' }}{{ item.count }}
+            .item-info(v-if="!editing")
+              input.item-progress(type="range", v-model="categories[key][index].progress", value=0, min=0, step=1, :max="item.count")
+              span.item-done(:class="{ 'is-done': item.progress == item.count }") {{ item.progress == item.count ? '✅' : '❌' }}
         p.no-items-warning(v-else) No items yet!
 
 
@@ -76,7 +80,7 @@ export default {
       if (count < 1 || count > 100) return;
       if (name.length == 0 || name.length > 100) return;
 
-      this.categories[category].push({ name, count });
+      this.categories[category].push({ name, count, progress: 0 });
       this.new_items[category] = '';
       this.new_counts[category] = 1;
     },
@@ -124,10 +128,37 @@ export default {
       }
     }
     .items {
-      border: 1px solid #68829c;
-      border-top: 1px solid #a5b6c7;
-      .item-name {
-        margin-right: 10px;
+      border: 1px solid #8fda8d;
+      border-top: 1px solid #8fda8d;
+
+      .item {
+        display: flex;
+
+        .item-name {
+          flex: 1;
+          margin-right: 10px;
+          text-align: left;
+        }
+        .item-count {
+          flex: 1;
+        }
+
+        .item-info {
+          .item-progress {
+            flex: 1;
+          }
+
+          .item-done {
+            font-size: 1.4em;
+
+            color: red;
+          }
+        }
+
+        .is-done {
+          color: #8fda8d;
+          font-weight: bold;
+        }
       }
 
       .no-items-warning {
@@ -146,6 +177,15 @@ export default {
     background-color: #a5b6c7;
     .category-total {
       color: #68829c;
+    }
+  }
+
+  .items {
+    border: 1px solid #a5b6c7;
+    border-top: 1px solid #a5b6c7;
+
+    .item-count {
+      text-align: left;
     }
   }
 }
