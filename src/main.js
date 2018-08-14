@@ -8,7 +8,8 @@ Vue.use(VueRouter);
 
 import router from './router.js';
 
-new Vue({
+// eslint-disable-next-line
+const app = new Vue({
   render: h => h(App),
   router
 }).$mount('#app');
