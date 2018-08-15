@@ -132,6 +132,12 @@ export default {
     margin-bottom: 10px;
   }
 
+  .remove-item button {
+    background-color: darkred;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
   .category {
     .category-header {
       background-color: #42b883;
