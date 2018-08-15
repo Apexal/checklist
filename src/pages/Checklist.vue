@@ -9,13 +9,13 @@
         input(type="text", placeholder="New category", v-model="new_category", @keyup.enter="addCategory(new_category)", minlength=0, maxlength=100)
         button(type="button", @click="addCategory(new_category)") Add
     
-    hr.separator
+    hr.separator(style="margin-bottom: 10px")
     router-link(to="/")
-      button Home
+      button(title="Go back to homepage") Home
     
-    button(@click="editing = !editing") {{ editing ? 'View' : 'Edit' }}
-    button(@click="saveToFirebase") Save
-    hr
+    button(:title="editing ? 'View and use the list' : 'Edit the list'", @click="editing = !editing") {{ editing ? 'View' : 'Edit' }}
+    button.warning(v-show="original !== encoded", @click="saveToFirebase") Save New
+    hr.separator(style="margin-top: 10px")
 
     div(v-if="Object.keys(categories).length > 0")
       .category(v-for="(value, key) in categories")
@@ -72,7 +72,8 @@ export default {
       new_category: '',
       new_items: {},
       new_counts: {},
-      categories: {}
+      categories: {},
+      original: null
     }; 
   },
   created () {
@@ -85,6 +86,8 @@ export default {
   },
   methods: {
     async saveToFirebase () {
+      if (!confirm('This will save as a new list.')) return;
+
       const new_ref = await this.$firebaseRefs.checklists.push(JSON.parse(this.encoded));
       alert('Saved! Share the URL to let others use the list.');
       this.$router.push({ path: `/checklist/${new_ref.key}`});
@@ -93,6 +96,7 @@ export default {
       this.$firebaseRefs.checklists.child(key).once('value', snapshot => {
         this.setCategories(snapshot.val());
         this.loading = false;
+        this.original = this.encoded;
       });
     },
     setCategories (categories) {
@@ -155,6 +159,11 @@ export default {
 <style scoped lang="scss">
 .title {
   margin-bottom: 5px;
+}
+
+button.warning {
+  color: white;
+  background-color: orange;
 }
 
 .categories {

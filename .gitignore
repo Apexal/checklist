@@ -84,3 +84,4 @@ typings/
 save.json
 credentials.env
 src/config.js
+.firebase
