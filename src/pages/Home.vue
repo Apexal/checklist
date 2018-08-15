@@ -1,7 +1,5 @@
 <template lang="pug">
   #home
-    h1 Home
-
     section
       h3 What is this?
       p This is a simple site that allows you to create a custom college move in checklist, use it to track packing, and share your own list or view and user others'! You can create a list and save it to be view later on; you can also edit an existing list somebody else has made and save it as your own.
@@ -25,7 +23,7 @@ export default {
 
 <style scoped>
 .rpi-logo {
-  max-width: 200px;
+  max-width: 150px;
 }
 
 h3 {
