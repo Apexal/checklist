@@ -9,7 +9,7 @@
       img.rpi-logo(src="../assets/RPILogo.jpg")
       
       h3 What is it made with?
-      p This site is a VueJS Single Page Application (SPA) using no backend for storage, because sharing a list is entirely stored in the url.
+      p This site is a VueJS Single Page Application (SPA) using Firebase's free tier for its database and hosting. It's my first real attempt at a SPA with VueJS in a while.
 
     router-link(to="/checklist/create")
       button.big Create List
