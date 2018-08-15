@@ -2,22 +2,23 @@
 #checklist
   .categories(:class="{ 'is-editing': editing }")
     .categories-header.flex
-      h1.title {{ Object.keys(categories).length }} Categories
+      h1.title {{ editing ? 'Editing' : ''}} {{ Object.keys(categories).length }} Categories
       .new-category(v-show="editing")
         input(type="text", placeholder="New category", v-model="new_category", @keyup.enter="addCategory(new_category)", minlength=0, maxlength=100)
-        button(type="button", @click="addCategory(new_category)") Add Category
+        button(type="button", @click="addCategory(new_category)") Add
     
     hr.separator
     div(v-if="Object.keys(categories).length > 0")
       .category(v-for="(value, key) in categories")
         .category-header.flex
           h2.category-name {{ key }}
-          .new-item(v-show="editing")
+          .new-item(v-if="editing")
             input(type="text", @keyup.enter="addItem(key, new_items[key], new_counts[key])", :placeholder="'New ' + key + ' item'", v-model="new_items[key]")
             input(type="number", @keyup.enter="addItem(key, new_items[key], new_counts[key])", value=1, min=1, max=100, v-model.number="new_counts[key]")
-            button(type="button", @click="addItem(key, new_items[key], new_counts[key])") Add Item
+            button(type="button", @click="addItem(key, new_items[key], new_counts[key])") Add
             a.remove-item(href="#", @click="removeCategory(key)", :title="'Remove category ' + key")
               button X
+          .percentage(v-else)  {{ getPercentDone(key) }}%
 
         details.items(open)
           summary {{ getCategoryTotal(key)  }} total
@@ -26,12 +27,12 @@
               b.item-name {{ item.name }}
               
               div(v-if="editing")
-                input(type="number", min=0, v-model.number="categories[key][index].count", max=100)
+                input(type="number", min=1, v-model.number="categories[key][index].count", max=100)
                 a.remove-item(href="#", @click.prevent="removeItem(key, index)", :title="'Remove ' + key + ' item ' + item.name")
                   button X
               .item-info(v-else, :class="{ 'is-done': item.progress == item.count }")
                 span.item-count {{ item.progress + ' / ' + item.count }}
-                input.item-progress(type="range", v-model="categories[key][index].progress", value=0, min=0, step=1, :max="item.count")
+                input.item-progress(type="range", v-model.number="categories[key][index].progress", value=0, min=0, step=1, :max="item.count")
                 span.item-done {{ item.progress == item.count ? '✅' : '❌' }}
           p.no-items-warning(v-else) No items yet!
     p.no-categories-warning(v-else) {{ editing ? 'Add a category above to start!' : 'This checklist is empty!' }}
@@ -39,8 +40,11 @@
     hr
   router-link(to="/")
     button Home
-  router-link(:to="{ path: '/checklist/' + (editing ? 'view' : 'create'), query: { list: encoded } }")
-    button {{ editing ? 'View' : 'Edit' }}
+  
+  button(@click="editing = !editing") {{ editing ? 'View' : 'Edit' }}
+  button(@click="loadCategories") Load
+  hr
+  code {{ encoded }}
 </template>
 
 <script>
@@ -50,6 +54,7 @@ export default {
   name: 'checklist',
   data () {
     return {
+      editing: this.$route.params.action == 'create',
       new_category: '',
       new_items: {},
       new_counts: {},
@@ -59,16 +64,20 @@ export default {
   created () {
     if (this.$route.query.list) {
       const decoded = JSON.parse(decodeURI(this.$route.query.list));
-    
-      for(const category_name in decoded) {
-        
-        Vue.set(this.categories, category_name, decoded[category_name]);
-        Vue.set(this.new_items, category_name, '');
-        Vue.set(this.new_counts, category_name, 1);
-      }
+      this.setCategories(decoded);  
     }
   },
   methods: {
+    setCategories (categories) {
+      for(const category_name in categories) { 
+        Vue.set(this.categories, category_name, categories[category_name]);
+        Vue.set(this.new_items, category_name, '');
+        Vue.set(this.new_counts, category_name, 1);
+      }
+    },
+    loadCategories () {
+      this.setCategories(JSON.parse(window.prompt('Enter JSON')));
+    },
     addCategory (category_name) {
       category_name = category_name.trim();
       
@@ -84,6 +93,11 @@ export default {
     },
     removeCategory (category) {
       Vue.delete(this.categories, category);
+    },
+    getPercentDone (category) {
+      const total = this.getCategoryTotal(category);
+      const have = this.categories[category].reduce((total, item) => total + item.progress, 0);
+      return Math.round((have / total) * 100);
     },
     addItem (category, name, count) {
       // Validate
@@ -103,7 +117,6 @@ export default {
     }
   },
   computed: {
-    editing () { return this.$route.params.action == 'create'; },
     encoded () { return JSON.stringify(this.categories); }
   }
 }
@@ -143,8 +156,6 @@ export default {
       background-color: #42b883;
       border-radius: 10px 10px 0 0;
       padding: 10px;
-      padding-top: 10px;
-      padding-bottom: 15px;
       color: white;
 
       align-items: center;
