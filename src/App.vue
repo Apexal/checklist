@@ -29,6 +29,13 @@ main {
   max-width: 800px;
 }
 
+hr {
+  margin: 20px 0;
+  border: none;
+  height: 2px;
+  background-color: #2c3e50;
+}
+
 input[type='text'],
 input[type='number'] {
   border: none;

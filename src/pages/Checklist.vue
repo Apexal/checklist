@@ -133,7 +133,7 @@ export default {
 
   .category {
     .category-header {
-      background-color: #8fda8d;
+      background-color: #42b883;
       border-radius: 10px 10px 0 0;
       padding: 10px;
       padding-top: 10px;
@@ -155,8 +155,10 @@ export default {
       }
     }
     .items {
-      border: 1px solid #8fda8d;
-      border-top: 1px solid #8fda8d;
+      border: 1px solid #42b883;
+      border-top: 1px solid #42b883;
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
 
       > ul {
         padding-left: 10px;
@@ -196,12 +198,12 @@ export default {
 
         .is-done {
           .item-count {
-            color: #8fda8d;
+            color: #42b883;
             font-weight: bold;
           }
 
           .item-done {
-            color: #8fda8d;
+            color: #42b883;
           }
         }
       }
@@ -215,6 +217,10 @@ export default {
 
     margin-bottom: 40px;
   }
+}
+
+.categories .category:last-child {
+  margin-bottom: 0;
 }
 
 .categories.is-editing {
