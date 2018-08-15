@@ -20,6 +20,23 @@ body {
   padding: 0;
 }
 
+button {
+  padding: 5px 15px;
+  font-size: 0.9em;
+  border: none;
+  background-color: #2c3e50;
+  border-radius: 5px;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #f3f3f3;
+  margin: 3px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #1d2835;
+}
+
 #app {
   // From Vue
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
