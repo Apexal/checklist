@@ -43,8 +43,10 @@
                 a.remove-item(href="#", @click.prevent="removeItem(key, index)", :title="'Remove ' + key + ' item ' + item.name")
                   button X
               .item-info(v-else, :class="{ 'is-done': item.progress == item.count }")
-                span.item-count {{ item.progress + ' / ' + item.count }}
-                input.item-progress(type="range", v-model.number="categories[key][index].progress", value=0, min=0, step=1, :max="item.count")
+                input(v-if="item.count == 1", type="checkbox", :true-value="1", :false-value="0", v-model.number="categories[key][index].progress")
+                span(v-else)
+                  span.item-count {{ item.progress + ' / ' + item.count }}
+                  input.item-progress(type="range", v-model.number="categories[key][index].progress", value=0, min=0, step=1, :max="item.count")
                 span.item-done {{ item.progress == item.count ? '✅' : '❌' }}
           p.no-items-warning(v-else) No items yet!
     p.no-categories-warning(v-else) {{ editing ? 'Add a category above to start!' : 'This checklist is empty!' }}
