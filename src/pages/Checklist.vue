@@ -22,7 +22,7 @@
             b.item-name {{ item.name }}
             
             div(v-if="editing")
-              input(, type="number", min=0, v-model.number="categories[key][index].count", max=100)
+              input(type="number", min=0, v-model.number="categories[key][index].count", max=100)
               a.remove-item(href="#", @click="removeItem(key, index)") X
             .item-info(v-else, :class="{ 'is-done': item.progress == item.count }")
               span.item-count {{ item.progress + ' / ' + item.count }}
@@ -31,11 +31,13 @@
         p.no-items-warning(v-else) No items yet!
 
 
-  p
+  //p
     code {{ encoded }}
   
-  router-link(to="/") Home
-  router-link(:to="{ path: '/checklist/' + (editing ? 'view' : 'create'), query: { list: encoded } }") {{ editing ? 'View' : 'Edit' }}
+  router-link(to="/")
+    button Home
+  router-link(:to="{ path: '/checklist/' + (editing ? 'view' : 'create'), query: { list: encoded } }")
+    button {{ editing ? 'View' : 'Edit' }}
 </template>
 
 <script>

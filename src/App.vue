@@ -20,6 +20,25 @@ body {
   padding: 0;
 }
 
+input[type='text'],
+input[type='number'] {
+  border: none;
+  background-image: none;
+  background-color: transparent;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+
+  border: 1px solid #2c3e50;
+  padding: 5px;
+  background-color: white;
+  border-radius: 5px;
+}
+
+input[type='number'] {
+  max-width: 30px;
+}
+
 button {
   padding: 5px 15px;
   font-size: 0.9em;
