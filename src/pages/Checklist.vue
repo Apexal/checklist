@@ -14,7 +14,7 @@
       button(title="Go back to homepage") Home
     
     button(:title="editing ? 'View and use the list' : 'Edit the list'", @click="editing = !editing") {{ editing ? 'View' : 'Edit' }}
-    button.warning(v-show="original !== encoded", @click="saveToFirebase") Save New
+    button.warning(v-show="original !== encoded", @click="saveToFirebase") Save As New
     hr.separator(style="margin-top: 10px")
 
     div(v-if="Object.keys(categories).length > 0")
