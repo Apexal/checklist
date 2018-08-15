@@ -202,6 +202,9 @@ export default {
         color: white;
       }
     }
+    summary {
+      background-color: #f3f3f3;
+    }
     .items {
       border: 1px solid #42b883;
       border-top: 1px solid #42b883;
