@@ -27,6 +27,7 @@ body {
 main {
   margin: 0 auto;
   max-width: 800px;
+  margin-bottom: 30px;
 }
 
 hr {

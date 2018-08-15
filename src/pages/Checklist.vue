@@ -2,7 +2,7 @@
 #checklist
   .categories(:class="{ 'is-editing': editing }")
     .categories-header.flex
-      h1.title {{ editing ? 'Editing' : ''}} {{ Object.keys(categories).length }} Categories
+      h2.title {{ editing ? 'Editing' : ''}} {{ Object.keys(categories).length }} Categories
       .new-category(v-show="editing")
         input(type="text", placeholder="New category", v-model="new_category", @keyup.enter="addCategory(new_category)", minlength=0, maxlength=100)
         button(type="button", @click="addCategory(new_category)") Add
@@ -14,7 +14,7 @@
     button(@click="editing = !editing") {{ editing ? 'View' : 'Edit' }}
     button(@click="saveToFirebase") Save
     hr
-    
+
     div(v-if="Object.keys(categories).length > 0")
       .category(v-for="(value, key) in categories")
         .category-header.flex
