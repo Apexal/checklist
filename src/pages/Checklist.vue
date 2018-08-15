@@ -1,6 +1,8 @@
 <template lang="pug">
 #checklist
-  .categories(:class="{ 'is-editing': editing }")
+  #loading(v-if="loading")
+    h1 Loading list...
+  .categories(v-else, :class="{ 'is-editing': editing }")
     .categories-header.flex
       h2.title {{ editing ? 'Editing' : ''}} {{ Object.keys(categories).length }} Categories
       .new-category(v-show="editing")
@@ -65,6 +67,7 @@ export default {
   data () {
     return {
       key: this.$route.params.key,
+      loading: true,
       editing: false,
       new_category: '',
       new_items: {},
@@ -73,10 +76,12 @@ export default {
     }; 
   },
   created () {
-    if (this.key !== 'create')
+    if (this.key !== 'create') {
       this.loadFromFirebase(this.key);
-    else
+    } else {
       this.editing = true;
+      this.loading = false;
+    }
   },
   methods: {
     async saveToFirebase () {
@@ -87,6 +92,7 @@ export default {
     loadFromFirebase (key) {
       this.$firebaseRefs.checklists.child(key).once('value', snapshot => {
         this.setCategories(snapshot.val());
+        this.loading = false;
       });
     },
     setCategories (categories) {
