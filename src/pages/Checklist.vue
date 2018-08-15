@@ -17,6 +17,9 @@
     button.warning(v-show="original !== encoded", @click="saveToFirebase") Save As New
     hr.separator(style="margin-top: 10px")
 
+    p(v-if="!editing") On packing day, keep track of how many of each item you have with the sliders! You can also collapse categories.
+    p(v-else) Add/remove categories and items then save your list as a new one.
+
     div(v-if="Object.keys(categories).length > 0")
       .category(v-for="(value, key) in categories")
         .category-header.flex
