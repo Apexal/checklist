@@ -8,6 +8,13 @@
         button(type="button", @click="addCategory(new_category)") Add
     
     hr.separator
+    router-link(to="/")
+      button Home
+    
+    button(@click="editing = !editing") {{ editing ? 'View' : 'Edit' }}
+    button(@click="saveToFirebase") Save
+    hr
+    
     div(v-if="Object.keys(categories).length > 0")
       .category(v-for="(value, key) in categories")
         .category-header.flex
@@ -37,24 +44,28 @@
           p.no-items-warning(v-else) No items yet!
     p.no-categories-warning(v-else) {{ editing ? 'Add a category above to start!' : 'This checklist is empty!' }}
 
-    hr
-  router-link(to="/")
-    button Home
-  
-  button(@click="editing = !editing") {{ editing ? 'View' : 'Edit' }}
-  button(@click="loadCategories") Load
-  hr
-  code {{ encoded }}
 </template>
 
 <script>
 import Vue from 'vue';
 
+import db from '../firebase.js';
+
 export default {
   name: 'checklist',
+  firebase: {
+    checklists: {
+      source: db.ref('/lists'),
+      readyCallback () {
+        // eslint-disable-next-line
+        console.log('Loaded data from Firebase...');
+      }
+    }
+  },
   data () {
     return {
-      editing: this.$route.params.action == 'create',
+      key: this.$route.params.key,
+      editing: false,
       new_category: '',
       new_items: {},
       new_counts: {},
@@ -62,21 +73,28 @@ export default {
     }; 
   },
   created () {
-    if (this.$route.query.list) {
-      const decoded = JSON.parse(decodeURI(this.$route.query.list));
-      this.setCategories(decoded);  
-    }
+    if (this.key !== 'create')
+      this.loadFromFirebase(this.key);
+    else
+      this.editing = true;
   },
   methods: {
+    async saveToFirebase () {
+      const new_ref = await this.$firebaseRefs.checklists.push(JSON.parse(this.encoded));
+      alert('Saved! Share the URL to let others use the list.');
+      this.$router.push({ path: `/checklist/${new_ref.key}`});
+    },
+    loadFromFirebase (key) {
+      this.$firebaseRefs.checklists.child(key).once('value', snapshot => {
+        this.categories = snapshot.val();
+      });
+    },
     setCategories (categories) {
       for(const category_name in categories) { 
         Vue.set(this.categories, category_name, categories[category_name]);
         Vue.set(this.new_items, category_name, '');
         Vue.set(this.new_counts, category_name, 1);
       }
-    },
-    loadCategories () {
-      this.setCategories(JSON.parse(window.prompt('Enter JSON')));
     },
     addCategory (category_name) {
       category_name = category_name.trim();

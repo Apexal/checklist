@@ -7,7 +7,7 @@ import Checklist from './pages/Checklist.vue';
 
 const routes = [
   { path: '/', component: Home },
-  { path: '/checklist/:action', component: Checklist }
+  { path: '/checklist/:key', component: Checklist }
 ];
 
 export default new VueRouter({

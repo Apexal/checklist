@@ -82,3 +82,5 @@ typings/
 .next
 
 save.json
+credentials.env
+src/config.js
