@@ -20,6 +20,11 @@ body {
   padding: 0;
 }
 
+main {
+  margin: 0 auto;
+  max-width: 800px;
+}
+
 input[type='text'],
 input[type='number'] {
   border: none;
