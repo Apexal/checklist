@@ -1,39 +1,39 @@
 <template lang="pug">
-#checklist-creator
+#checklist
   .categories(:class="{ 'is-editing': editing }")
     .categories-header
       h1.title {{ Object.keys(categories).length }} Categories
       .new-category(v-show="editing")
         input(type="text", placeholder="New category", v-model="new_category", @keyup.enter="addCategory(new_category)", minlength=0, maxlength=100)
         button(type="button", @click="addCategory(new_category)") Add Category
-  
-    details.category(open, v-for="(value, key) in categories")
-      summary.category-header
-        h2.category-name {{ key }}
-          span.category-total {{ getCategoryTotal(key) }} total
-        .new-item(v-show="editing")
-          input(type="text", :placeholder="'New ' + key + ' item'", v-model="new_items[key]")
-          input(type="number", value=1, min=1, max=100, v-model.number="new_counts[key]")
-          button(type="button", @click="addItem(key, new_items[key], new_counts[key])") Add Item
-      
-      .items
-        ul(v-if="categories[key].length > 0")
-          li.item(v-for="item, index in categories[key]")
-            b.item-name {{ item.name }}
-            
-            div(v-if="editing")
-              input(type="number", min=0, v-model.number="categories[key][index].count", max=100)
-              a.remove-item(href="#", @click="removeItem(key, index)") X
-            .item-info(v-else, :class="{ 'is-done': item.progress == item.count }")
-              span.item-count {{ item.progress + ' / ' + item.count }}
-              input.item-progress(type="range", v-model="categories[key][index].progress", value=0, min=0, step=1, :max="item.count")
-              span.item-done {{ item.progress == item.count ? '✅' : '❌' }}
-        p.no-items-warning(v-else) No items yet!
+    
+    hr.separator
+    div(v-if="Object.keys(categories).length > 0")
+      details.category(open, v-for="(value, key) in categories")
+        summary.category-header
+          h2.category-name {{ key }}
+            span.category-total {{ getCategoryTotal(key) }} total
+          .new-item(v-show="editing")
+            input(type="text", :placeholder="'New ' + key + ' item'", v-model="new_items[key]")
+            input(type="number", value=1, min=1, max=100, v-model.number="new_counts[key]")
+            button(type="button", @click="addItem(key, new_items[key], new_counts[key])") Add Item
+        
+        .items
+          ul(v-if="categories[key].length > 0")
+            li.item(v-for="item, index in categories[key]")
+              b.item-name {{ item.name }}
+              
+              div(v-if="editing")
+                input(type="number", min=0, v-model.number="categories[key][index].count", max=100)
+                a.remove-item(href="#", @click="removeItem(key, index)") X
+              .item-info(v-else, :class="{ 'is-done': item.progress == item.count }")
+                span.item-count {{ item.progress + ' / ' + item.count }}
+                input.item-progress(type="range", v-model="categories[key][index].progress", value=0, min=0, step=1, :max="item.count")
+                span.item-done {{ item.progress == item.count ? '✅' : '❌' }}
+          p.no-items-warning(v-else) No items yet!
+    p.no-categories-warning(v-else) {{ editing ? 'Add a category above to start!' : 'This checklist is empty!' }}
 
-
-  //p
-    code {{ encoded }}
-  
+    hr
   router-link(to="/")
     button Home
   router-link(:to="{ path: '/checklist/' + (editing ? 'view' : 'create'), query: { list: encoded } }")
