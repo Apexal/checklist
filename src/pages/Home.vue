@@ -4,13 +4,17 @@
 
     section
       h3 What is this?
-      p This is a simple site that allows you to create a custom college move in checklist, use it to track packing, and share your own list or view and user others'!
-      p #[img.rpi-logo(src="../assets/RPILogo.jpg")]
+      p This is a simple site that allows you to create a custom college move in checklist, use it to track packing, and share your own list or view and user others'! You can create a list and save it to be view later on; you can also edit an existing list somebody else has made and save it as your own.
+      p Click the #[b Create List] button below to start building your own checklist, or check out an #[router-link(:to="`/checklist/-LJwFpDrQ8c_XCwV4Twn`") example list] (the one I'll be using myself!).
+      
+      p I'm starting Freshman year at RPI this September, which has inspired me to make this!
+      img.rpi-logo(src="../assets/RPILogo.jpg")
+      
       h3 What is it made with?
       p This site is a VueJS Single Page Application (SPA) using no backend for storage, because sharing a list is entirely stored in the url.
 
     router-link(to="/checklist/create")
-      button Create
+      button.big Create List
 </template>
 
 <script>
@@ -37,5 +41,10 @@ li {
 }
 a {
   color: #42b983;
+}
+
+button.big {
+  font-size: 1.5em;
+  padding: 10px 25px;
 }
 </style>
