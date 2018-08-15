@@ -1,7 +1,7 @@
 <template lang="pug">
 #checklist
   .categories(:class="{ 'is-editing': editing }")
-    .categories-header
+    .categories-header.flex
       h1.title {{ Object.keys(categories).length }} Categories
       .new-category(v-show="editing")
         input(type="text", placeholder="New category", v-model="new_category", @keyup.enter="addCategory(new_category)", minlength=0, maxlength=100)
@@ -10,14 +10,15 @@
     hr.separator
     div(v-if="Object.keys(categories).length > 0")
       details.category(open, v-for="(value, key) in categories")
-        summary.category-header
+        summary.category-header.flex
           h2.category-name {{ key }}
             span.category-total {{ getCategoryTotal(key) }} total
           .new-item(v-show="editing")
-            input(type="text", :placeholder="'New ' + key + ' item'", v-model="new_items[key]")
-            input(type="number", value=1, min=1, max=100, v-model.number="new_counts[key]")
+            input(type="text", @keyup.enter="addItem(key, new_items[key], new_counts[key])", :placeholder="'New ' + key + ' item'", v-model="new_items[key]")
+            input(type="number", @keyup.enter="addItem(key, new_items[key], new_counts[key])", value=1, min=1, max=100, v-model.number="new_counts[key]")
             button(type="button", @click="addItem(key, new_items[key], new_counts[key])") Add Item
-        
+            a.remove-item(href="#", @click="removeCategory(key)", :title="'Remove category ' + key")
+              button X
         .items
           ul(v-if="categories[key].length > 0")
             li.item(v-for="item, index in categories[key]")
@@ -25,7 +26,8 @@
               
               div(v-if="editing")
                 input(type="number", min=0, v-model.number="categories[key][index].count", max=100)
-                a.remove-item(href="#", @click="removeItem(key, index)") X
+                a.remove-item(href="#", @click="removeItem(key, index)", :title="'Remove ' + key + ' item ' + item.name")
+                  button X
               .item-info(v-else, :class="{ 'is-done': item.progress == item.count }")
                 span.item-count {{ item.progress + ' / ' + item.count }}
                 input.item-progress(type="range", v-model="categories[key][index].progress", value=0, min=0, step=1, :max="item.count")
@@ -78,6 +80,9 @@ export default {
 
       // Empty input
       this.new_category = '';
+    },
+    removeCategory (category) {
+      Vue.delete(this.categories, category);
     },
     addItem (category, name, count) {
       // Validate
@@ -135,7 +140,6 @@ export default {
       padding-bottom: 15px;
       color: white;
 
-      display: flex;
       align-items: center;
 
       .category-name {
@@ -155,21 +159,25 @@ export default {
       border-top: 1px solid #8fda8d;
 
       > ul {
-        padding-left: 20px;
+        padding-left: 10px;
+        padding-right: 10px;
+        margin: 5px 0;
       }
 
       .item {
         display: flex;
+        align-items: center;
 
         .item-name {
           flex: 1;
-          margin-right: 10px;
           text-align: left;
         }
 
         .remove-item {
-          margin-left: 5px;
-          margin-right: 5px;
+          button {
+            padding-left: 10px;
+            padding-right: 10px;
+          }
         }
 
         .item-info {

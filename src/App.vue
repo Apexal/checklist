@@ -65,6 +65,26 @@ button:hover {
   background-color: #1d2835;
 }
 
+.flex {
+  display: flex;
+}
+
+@media (max-width: 600px) {
+  main {
+    padding: 0 10px;
+    margin-bottom: 10px;
+  }
+  h1,
+  h2 {
+    text-align: center !important;
+  }
+
+  .flex {
+    display: block !important;
+    align-items: start !important;
+  }
+}
+
 #app {
   // From Vue
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
