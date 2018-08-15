@@ -86,7 +86,7 @@ export default {
     },
     loadFromFirebase (key) {
       this.$firebaseRefs.checklists.child(key).once('value', snapshot => {
-        this.categories = snapshot.val();
+        this.setCategories(snapshot.val());
       });
     },
     setCategories (categories) {
@@ -135,7 +135,13 @@ export default {
     }
   },
   computed: {
-    encoded () { return JSON.stringify(this.categories); }
+    encoded () { 
+      const data = JSON.parse(JSON.stringify(this.categories));
+      for(let key in data) {
+        data[key].forEach(item => item.progress = 0);
+      }
+      return JSON.stringify(data);
+    }
   }
 }
 </script>
