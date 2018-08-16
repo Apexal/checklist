@@ -19,9 +19,15 @@
     button.warning(v-show="!saved", @click="saveToFirebase") Save
     hr.separator(style="margin-top: 10px")
 
-    p(v-if="!editing") On packing day, keep track of how many of each item you have with the sliders! You can also collapse categories.
-    p(v-else) Add/remove categories and items then save your list as a new one.
+    details.help(open)
+      summary Help
 
+      p(v-if="!editing") On packing day, keep track of how many of each item you have with the checkboxes and sliders! You can also collapse categories.
+      p(v-else) Add/remove categories and items then save your list as a new one.
+
+      p.warning(v-show="!is_current && changedProgress()")
+        i You are viewing someone else's list. If you want to use this list click #[b TRACK PROGRESS].
+    
     div(v-if="Object.keys(categories).length > 0")
       .category(v-for="(value, key) in categories")
         .category-header.flex
@@ -45,11 +51,14 @@
                 a.remove-item(href="#", @click.prevent="removeItem(key, index)", :title="'Remove ' + key + ' item ' + item.name")
                   button X
               .item-info(v-else, :class="{ 'is-done': item.progress == item.count }")
-                input(v-if="item.count == 1", @change="onProgressUpdate", type="checkbox", :true-value="1", :false-value="0", v-model.number="categories[key][index].progress")
+                span(v-if="is_current")
+                  input(v-if="item.count == 1", @change="onProgressUpdate", type="checkbox", :true-value="1", :false-value="0", v-model.number="categories[key][index].progress")
+                  span(v-else)
+                    span.item-count {{ item.progress + ' / ' + item.count }}
+                    input.item-progress(type="range", @change="onProgressUpdate", v-model.number="categories[key][index].progress", value=0, min=0, step=1, :max="item.count")
+                  span.item-done {{ item.progress == item.count ? '✅' : '❌' }}
                 span(v-else)
-                  span.item-count {{ item.progress + ' / ' + item.count }}
-                  input.item-progress(type="range", @change="onProgressUpdate", v-model.number="categories[key][index].progress", value=0, min=0, step=1, :max="item.count")
-                span.item-done {{ item.progress == item.count ? '✅' : '❌' }}
+                  span.item-count {{ item.count }}
           p.no-items-warning(v-else) No items yet!
     p.no-categories-warning(v-else) {{ editing ? 'Add a category above to start!' : 'This checklist is empty!' }}
 
@@ -216,6 +225,23 @@ export default {
 button.warning {
   color: white;
   background-color: orange;
+}
+
+.help {
+  background-color: rgb(238, 101, 101);
+  color: white;
+  border-radius: 5px;
+  text-align: left;
+  padding: 5px 15px;
+  margin-bottom: 10px;
+
+  summary {
+    font-weight: bold;
+  }
+
+  p:last-child {
+    margin-bottom: 5px;
+  }
 }
 
 .categories {
