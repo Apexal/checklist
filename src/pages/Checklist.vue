@@ -4,7 +4,7 @@
     h1 Loading list...
   .categories(v-else, :class="{ 'is-editing': editing }")
     .categories-header.flex
-      h2.title {{ editing ? 'Editing' : ''}} {{ Object.keys(categories).length }} Categories
+      h2.title {{ is_current ? '⭐ Your ' : '' }}{{ editing ? 'Editing' : ''}} {{ Object.keys(categories).length }} Categories
       .new-category(v-show="editing")
         input(type="text", placeholder="New category", v-model="new_category", @keyup.enter="addCategory(new_category)", minlength=0, maxlength=100)
         button(type="button", @click="addCategory(new_category)") Add
@@ -14,6 +14,8 @@
       button(title="Go back to homepage") Home
     
     button(:title="editing ? 'View and use the list' : 'Edit the list'", @click="editing = !editing") {{ editing ? 'View' : 'Edit' }}
+    button(v-show="!this.is_current", @click="setCurrent") Track Progress
+
     button.warning(v-show="original !== encoded", @click="saveToFirebase") Save As New
     hr.separator(style="margin-top: 10px")
 
@@ -72,6 +74,7 @@ export default {
   data () {
     return {
       key: this.$route.params.key,
+      is_current: false,
       loading: true,
       editing: false,
       new_category: '',
@@ -83,11 +86,26 @@ export default {
   },
   created () {
     if (this.key !== 'create') {
-      this.loadFromFirebase(this.key);
+      this.is_current = this.key === localStorage.getItem('checklist-key');
+
+      if (this.is_current) {
+        this.loadFromLocalStorage();
+      } else {
+        this.loadFromFirebase(this.key);
+      }
     } else {
       this.editing = true;
       this.loading = false;
+      this.is_current = true;
     }
+
+    setInterval(() => {
+      // eslint-disable-next-line
+      console.log('10 seconds');
+      if (this.changedProgress() && this.is_current) {
+        this.saveCurrentToLocalStorage();
+      }
+    }, 15 * 1000);
   },
   methods: {
     async saveToFirebase () {
@@ -103,6 +121,24 @@ export default {
         this.loading = false;
         this.original = this.encoded;
       });
+    },
+    loadFromLocalStorage () {
+      // eslint-disable-next-line
+      console.log('LOADED FROM LOCAL STORAGE');
+      this.setCategories(JSON.parse(localStorage.getItem('checklist-categoriesJSON')));
+      this.loading = false;
+      this.original = this.encoded;
+    },
+    setCurrent () {
+      if (!confirm('Use this checklist? Your progress will only be saved for this one until you choose another.')) return;
+      this.saveCurrentToLocalStorage();
+      this.is_current = true;
+    },
+    saveCurrentToLocalStorage () {
+      localStorage.setItem('checklist-key', this.key);
+      localStorage.setItem('checklist-categoriesJSON', JSON.stringify(this.categories));
+      // eslint-disable-next-line
+      console.log("Saved checklist because it is current");
     },
     setCategories (categories) {
       for(const category_name in categories) { 
@@ -147,6 +183,22 @@ export default {
     },
     getCategoryTotal (category) {
       return this.categories[category].reduce((total, item) => total + item.count, 0);
+    },
+    changedProgress () {
+      return (this.original === this.encoded) && (localStorage.getItem('checklist-categoriesJSON') !== JSON.stringify(this.categories));
+    }
+  },
+  watch: {
+    // eslint-disable-next-line
+    '$route' (to, from) {
+      if (this.key !== 'create') {
+        this.loadFromFirebase(this.key);
+        this.is_current = this.key === localStorage.getItem('checklist-key');
+      } else {
+        this.editing = true;
+        this.loading = false;
+        this.is_current = true;
+      }
     }
   },
   computed: {
@@ -156,7 +208,7 @@ export default {
         data[key].forEach(item => item.progress = 0);
       }
       return JSON.stringify(data);
-    }
+    }    
   }
 }
 </script>
