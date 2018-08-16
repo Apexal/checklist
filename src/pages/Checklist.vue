@@ -239,8 +239,12 @@ export default {
     font-weight: bold;
   }
 
-  p:last-child {
-    margin-bottom: 5px;
+  p {
+    margin-top: 5px;
+
+    &:last-child {
+      margin-bottom: 5px;
+    }
   }
 }
 
