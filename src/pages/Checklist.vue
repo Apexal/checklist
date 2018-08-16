@@ -13,10 +13,10 @@
     router-link(to="/")
       button(title="Go back to homepage") Home
     
-    button(:title="editing ? 'View and use the list' : 'Edit the list'", @click="editing = !editing") {{ editing ? 'View' : 'Edit' }}
-    button(v-show="!this.is_current", @click="setCurrent") Track Progress
+    button(v-show="!creating", :title="editing ? 'View and use the list' : 'Edit the list'", @click="editing = !editing") {{ editing ? 'View' : 'Edit' }}
+    button(v-show="!creating && !this.is_current", @click="setCurrent") Track Progress
 
-    button.warning(v-show="original !== encoded", @click="saveToFirebase") Save As New
+    button.warning(v-show="original !== encoded", @click="saveToFirebase") {{ key === 'create' ? 'Save' : 'Fork' }}
     hr.separator(style="margin-top: 10px")
 
     p(v-if="!editing") On packing day, keep track of how many of each item you have with the sliders! You can also collapse categories.
@@ -56,6 +56,7 @@
 </template>
 
 <script>
+/* eslint-disable */
 import Vue from 'vue';
 
 import db from '../firebase.js';
@@ -75,6 +76,7 @@ export default {
     return {
       key: this.$route.params.key,
       is_current: false,
+      creating: false,
       loading: true,
       editing: false,
       new_category: '',
@@ -85,19 +87,7 @@ export default {
     }; 
   },
   created () {
-    if (this.key !== 'create') {
-      this.is_current = this.key === localStorage.getItem('checklist-key');
-
-      if (this.is_current) {
-        this.loadFromLocalStorage();
-      } else {
-        this.loadFromFirebase(this.key);
-      }
-    } else {
-      this.editing = true;
-      this.loading = false;
-      this.is_current = true;
-    }
+    this.load();
 
     setInterval(() => {
       // eslint-disable-next-line
@@ -108,14 +98,38 @@ export default {
     }, 15 * 1000);
   },
   methods: {
+    load () { 
+      if (this.key !== 'create') {
+        console.log('Not create key');
+        this.is_current = this.key === localStorage.getItem('checklist-key');
+
+        if (this.is_current) {
+          console.log('Key is current');
+          this.loadFromLocalStorage();
+        } else {
+          this.loadFromFirebase(this.key);
+        }
+      } else {
+        console.log('Create page');
+        this.editing = true;
+        this.creating = true;
+        this.loading = false;
+      }
+    },
     async saveToFirebase () {
       if (!confirm('This will save as a new list.')) return;
 
       const new_ref = await this.$firebaseRefs.checklists.push(JSON.parse(this.encoded));
       alert('Saved! Share the URL to let others use the list.');
       this.$router.push({ path: `/checklist/${new_ref.key}`});
+
+      this.is_current = true;
+      this.saveCurrentToLocalStorage();
+      this.original = this.encoded;
+      this.creating = false;
     },
     loadFromFirebase (key) {
+      console.log('Loaded checklist from Firebase');
       this.$firebaseRefs.checklists.child(key).once('value', snapshot => {
         this.setCategories(snapshot.val());
         this.loading = false;
@@ -123,16 +137,16 @@ export default {
       });
     },
     loadFromLocalStorage () {
-      // eslint-disable-next-line
-      console.log('LOADED FROM LOCAL STORAGE');
+      console.log('Loaded checklist from localStorage');
       this.setCategories(JSON.parse(localStorage.getItem('checklist-categoriesJSON')));
       this.loading = false;
       this.original = this.encoded;
     },
     setCurrent () {
       if (!confirm('Use this checklist? Your progress will only be saved for this one until you choose another.')) return;
-      this.saveCurrentToLocalStorage();
+
       this.is_current = true;
+      console.log('Set as current');
     },
     saveCurrentToLocalStorage () {
       localStorage.setItem('checklist-key', this.key);
@@ -190,15 +204,11 @@ export default {
   },
   watch: {
     // eslint-disable-next-line
-    '$route' (to, from) {
-      if (this.key !== 'create') {
-        this.loadFromFirebase(this.key);
-        this.is_current = this.key === localStorage.getItem('checklist-key');
-      } else {
-        this.editing = true;
-        this.loading = false;
-        this.is_current = true;
-      }
+    beforeRouteUpdate (to, from, next) {
+      console.log('Changed route');
+      //this.key = localStorage.getItem('checklist-key');
+      this.load();
+      next();
     }
   },
   computed: {
