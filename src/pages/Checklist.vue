@@ -16,7 +16,7 @@
     button(v-show="!creating && saved", :title="editing ? 'View and use the list' : 'Edit the list'", @click="editing = !editing") {{ editing ? 'View' : 'Edit' }}
     button(v-show="!creating && !this.is_current", @click="setCurrent") Track Progress
 
-    button.warning(v-show="!saved", @click="saveToFirebase") Save
+    .warning(v-show="!saved", @click="saveToFirebase") Save
     hr.separator(style="margin-top: 10px")
 
     details.help(open)
@@ -25,7 +25,7 @@
       p(v-if="!editing") On packing day, keep track of how many of each item you have with the checkboxes and sliders! You can also collapse categories.
       p(v-else) Add/remove categories and items then save your list as a new one.
 
-      p.warning(v-show="!is_current && changedProgress()")
+      p(v-show="!is_current && changedProgress()")
         i You are viewing someone else's list. If you want to use this list click #[b TRACK PROGRESS].
     
     div(v-if="Object.keys(categories).length > 0")
@@ -38,7 +38,7 @@
             button(type="button", @click="addItem(key, new_items[key], new_counts[key])") Add
             a.remove-item(href="#", @click="removeCategory(key)", :title="'Remove category ' + key")
               button X
-          .percentage(v-else)  {{ getPercentDone(key) }}%
+          .percentage(v-else-if="is_current")  {{ getPercentDone(key) }}%
 
         details.items(open)
           summary {{ getCategoryTotal(key)  }} total
@@ -50,7 +50,7 @@
                 input(type="number", min=1, v-model.number="categories[key][index].count", max=100)
                 a.remove-item(href="#", @click.prevent="removeItem(key, index)", :title="'Remove ' + key + ' item ' + item.name")
                   button X
-              .item-info(v-else, :class="{ 'is-done': item.progress == item.count }")
+              .item-info(v-else, :class="{ 'is-done': item.progress == item.count, 'just-viewing': !is_current }")
                 span(v-if="is_current")
                   input(v-if="item.count == 1", @change="onProgressUpdate", type="checkbox", :true-value="1", :false-value="0", v-model.number="categories[key][index].progress")
                   span(v-else)
@@ -222,7 +222,7 @@ export default {
   margin-bottom: 5px;
 }
 
-button.warning {
+.warning {
   color: white;
   background-color: orange;
 }
@@ -321,6 +321,10 @@ button.warning {
         }
 
         .item-info {
+          &.just-viewing {
+            flex: 1;
+          }
+
           .item-count {
             flex: 1;
           }
