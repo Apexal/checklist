@@ -3,7 +3,7 @@
   section
     h3 What is this?
     p This is a simple site that allows you to create a custom college move in checklist, use it to track packing, and share your own list or view and user others'! You can create a list and save it to be view later on; you can also edit an existing list somebody else has made and save it as your own.
-    p Click the #[b Create List] button below to start building your own checklist, or check out an #[router-link(:to="`/checklist/-LJwFpDrQ8c_XCwV4Twn`") example list] (the one I'll be using myself!).
+    p Click the #[b Create List] button below to start building your own checklist, or check out an #[router-link(:to="`/checklist/-LK28uMo_9TQV3koi7rF`") example list] (the one I'll be using myself!).
     
     p I'm starting Freshman year at RPI this September, which has inspired me to make this!
     img.rpi-logo(src="../assets/RPILogo.jpg")
@@ -18,6 +18,7 @@
 </template>
 
 <script>
+
 export default {
   name: 'Home',
   data () {
