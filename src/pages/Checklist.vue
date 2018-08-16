@@ -147,6 +147,7 @@ export default {
 
       this.is_current = true;
       console.log('Set as current');
+      this.saveCurrentToLocalStorage();
     },
     saveCurrentToLocalStorage () {
       localStorage.setItem('checklist-key', this.key);
