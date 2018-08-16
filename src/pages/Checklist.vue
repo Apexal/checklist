@@ -45,10 +45,10 @@
                 a.remove-item(href="#", @click.prevent="removeItem(key, index)", :title="'Remove ' + key + ' item ' + item.name")
                   button X
               .item-info(v-else, :class="{ 'is-done': item.progress == item.count }")
-                input(v-if="item.count == 1", type="checkbox", :true-value="1", :false-value="0", v-model.number="categories[key][index].progress")
+                input(v-if="item.count == 1", @change="onProgressUpdate", type="checkbox", :true-value="1", :false-value="0", v-model.number="categories[key][index].progress")
                 span(v-else)
                   span.item-count {{ item.progress + ' / ' + item.count }}
-                  input.item-progress(type="range", v-model.number="categories[key][index].progress", value=0, min=0, step=1, :max="item.count")
+                  input.item-progress(type="range", @change="onProgressUpdate", v-model.number="categories[key][index].progress", value=0, min=0, step=1, :max="item.count")
                 span.item-done {{ item.progress == item.count ? '✅' : '❌' }}
           p.no-items-warning(v-else) No items yet!
     p.no-categories-warning(v-else) {{ editing ? 'Add a category above to start!' : 'This checklist is empty!' }}
@@ -56,7 +56,6 @@
 </template>
 
 <script>
-/* eslint-disable */
 import Vue from 'vue';
 
 import db from '../firebase.js';
@@ -88,29 +87,23 @@ export default {
   },
   created () {
     this.load();
-
-    setInterval(() => {
-      // eslint-disable-next-line
-      console.log('10 seconds');
+  },
+  methods: {
+    onProgressUpdate () {
       if (this.changedProgress() && this.is_current) {
         this.saveCurrentToLocalStorage();
       }
-    }, 15 * 1000);
-  },
-  methods: {
+    },
     load () { 
       if (this.key !== 'create') {
-        console.log('Not create key');
         this.is_current = this.key === localStorage.getItem('checklist-key');
 
         if (this.is_current) {
-          console.log('Key is current');
           this.loadFromLocalStorage();
         } else {
           this.loadFromFirebase(this.key);
         }
       } else {
-        console.log('Create page');
         this.editing = true;
         this.creating = true;
         this.loading = false;
@@ -129,7 +122,6 @@ export default {
       this.creating = false;
     },
     loadFromFirebase (key) {
-      console.log('Loaded checklist from Firebase');
       this.$firebaseRefs.checklists.child(key).once('value', snapshot => {
         this.setCategories(snapshot.val());
         this.loading = false;
@@ -137,7 +129,6 @@ export default {
       });
     },
     loadFromLocalStorage () {
-      console.log('Loaded checklist from localStorage');
       this.setCategories(JSON.parse(localStorage.getItem('checklist-categoriesJSON')));
       this.loading = false;
       this.original = this.encoded;
@@ -146,7 +137,6 @@ export default {
       if (!confirm('Use this checklist? Your progress will only be saved for this one until you choose another.')) return;
 
       this.is_current = true;
-      console.log('Set as current');
       this.saveCurrentToLocalStorage();
     },
     saveCurrentToLocalStorage () {
