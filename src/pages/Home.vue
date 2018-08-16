@@ -29,12 +29,6 @@ export default {
   created () {
     this.has_current = this.current_key !== null;
   },
-  watch: {
-    '$route': function() {
-      this.current_key = localStorage.getItem('checklist-key');
-      this.has_current = this.current_key !== null;
-    }
-  },
   computed: {
     hasCurrent () {
       return localStorage.getItem('checklist-key') !== null;

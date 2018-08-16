@@ -202,15 +202,6 @@ export default {
       return (this.original === this.encoded) && (localStorage.getItem('checklist-categoriesJSON') !== JSON.stringify(this.categories));
     }
   },
-  watch: {
-    // eslint-disable-next-line
-    beforeRouteUpdate (to, from, next) {
-      console.log('Changed route');
-      //this.key = localStorage.getItem('checklist-key');
-      this.load();
-      next();
-    }
-  },
   computed: {
     encoded () { 
       const data = JSON.parse(JSON.stringify(this.categories));
