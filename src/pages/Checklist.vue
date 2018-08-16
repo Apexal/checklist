@@ -13,10 +13,10 @@
     router-link(to="/")
       button(title="Go back to homepage") Home
     
-    button(v-show="!creating", :title="editing ? 'View and use the list' : 'Edit the list'", @click="editing = !editing") {{ editing ? 'View' : 'Edit' }}
+    button(v-show="!creating && saved", :title="editing ? 'View and use the list' : 'Edit the list'", @click="editing = !editing") {{ editing ? 'View' : 'Edit' }}
     button(v-show="!creating && !this.is_current", @click="setCurrent") Track Progress
 
-    button.warning(v-show="original !== encoded", @click="saveToFirebase") {{ key === 'create' ? 'Save' : 'Fork' }}
+    button.warning(v-show="!saved", @click="saveToFirebase") Save
     hr.separator(style="margin-top: 10px")
 
     p(v-if="!editing") On packing day, keep track of how many of each item you have with the sliders! You can also collapse categories.
@@ -210,7 +210,10 @@ export default {
         data[key].forEach(item => item.progress = 0);
       }
       return JSON.stringify(data);
-    }    
+    },
+    saved () {
+      return this.original === this.encoded;
+    }
   }
 }
 </script>
