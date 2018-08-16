@@ -16,7 +16,7 @@
     button(v-show="!creating && saved", :title="editing ? 'View and use the list' : 'Edit the list'", @click="editing = !editing") {{ editing ? 'View' : 'Edit' }}
     button(v-show="!creating && !this.is_current", @click="setCurrent") Track Progress
 
-    .warning(v-show="!saved", @click="saveToFirebase") Save
+    button.warning(v-show="!saved", @click="saveToFirebase") Save
     hr.separator(style="margin-top: 10px")
 
     details.help(open)
