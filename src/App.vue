@@ -73,8 +73,16 @@ button:hover {
   background-color: #1d2835;
 }
 
+.warning {
+  color: white;
+  background-color: orange;
+}
+
 .flex {
   display: flex;
+  &.inline {
+    display: inline-flex;
+  }
   align-items: center;
 }
 
@@ -88,9 +96,9 @@ button:hover {
     text-align: center !important;
   }
 
-  .flex {
+  .flex:not(.inline) {
     display: block !important;
-    align-items: start !important;
+    align-items: center !important;
   }
 }
 

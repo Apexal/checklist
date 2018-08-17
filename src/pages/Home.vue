@@ -12,7 +12,7 @@
     p This site is a VueJS Single Page Application (SPA) using Firebase's free tier for its database and hosting. It's my first real attempt at a SPA with VueJS in a while.
 
   router-link(v-show="has_current", :to="{path: `/checklist/${current_key}`}")
-    button.big Your List
+    button.big.warning Your List
   router-link(to="/checklist/create")
     button.big Create List
 </template>

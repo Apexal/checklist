@@ -51,9 +51,9 @@
                 a.remove-item(href="#", @click.prevent="removeItem(key, index)", :title="'Remove ' + key + ' item ' + item.name")
                   button X
               .item-info(v-else, :class="{ 'is-done': item.progress == item.count, 'just-viewing': !is_current }")
-                span.flex(v-if="is_current")
+                span.flex.inline(v-if="is_current")
                   input(v-if="item.count == 1", @change="onProgressUpdate", type="checkbox", :true-value="1", :false-value="0", v-model.number="categories[key][index].progress")
-                  span.flex(v-else)
+                  span.flex.inline(v-else)
                     span.item-count {{ item.progress }}/{{ item.count }}
                     input.item-progress(type="range", @change="onProgressUpdate", v-model.number="categories[key][index].progress", value=0, min=0, step=1, :max="item.count")
                   span.item-done {{ item.progress == item.count ? '✅' : '❌' }}
@@ -220,11 +220,6 @@ export default {
 <style scoped lang="scss">
 .title {
   margin-bottom: 5px;
-}
-
-.warning {
-  color: white;
-  background-color: orange;
 }
 
 .help {
