@@ -5,6 +5,7 @@
   .categories(v-else, :class="{ 'is-editing': editing }")
     .categories-header.flex
       h2.title {{ is_current ? '⭐ Your ' : '' }}{{ editing ? 'Editing' : ''}} {{ Object.keys(categories).length }} Categories
+        small.list-total {{ totalItems }} items
       .new-category(v-show="editing")
         input(type="text", placeholder="New category", v-model="new_category", @keyup.enter="addCategory(new_category)", minlength=0, maxlength=100)
         button(type="button", @click="addCategory(new_category)") Add
@@ -210,6 +211,9 @@ export default {
       }
       return JSON.stringify(data);
     },
+    totalItems () {
+      return Object.keys(this.categories).reduce((acc, cat) => acc + this.getCategoryTotal(cat), 0)
+    },
     saved () {
       return this.original === this.encoded;
     }
@@ -236,10 +240,7 @@ export default {
 
   p {
     margin-top: 5px;
-
-    &:last-child {
-      margin-bottom: 5px;
-    }
+    margin-bottom: 5px;
   }
 }
 
@@ -256,6 +257,11 @@ export default {
       flex: 1;
       text-align: left;
       margin: 0;
+
+      small.list-total {
+        margin-left: 5px;
+        color: #a5b6c7;
+      }
     }
 
     margin-bottom: 10px;
