@@ -30,7 +30,7 @@
         i You are viewing someone else's list. If you want to use this list click #[b TRACK PROGRESS].
     
     div(v-if="Object.keys(categories).length > 0")
-      .category(v-for="(value, key) in categories")
+      .category(v-show="is_current || editing", v-for="(value, key) in categories")
         .category-header.flex
           h2.category-name {{ key }}
           .new-item(v-if="editing")
@@ -61,6 +61,8 @@
                 span(v-else)
                   span.item-count {{ item.count }}
           p.no-items-warning(v-else) No items yet!
+    
+      Category(v-show="!is_current && !editing", v-for="(items, name) in categories", :name="name", :items="items", :key="name")
     p.no-categories-warning(v-else) {{ editing ? 'Add a category above to start!' : 'This checklist is empty!' }}
 
 </template>
@@ -70,8 +72,13 @@ import Vue from 'vue';
 
 import db from '../firebase.js';
 
+import Category from '../components/Category.vue';
+
 export default {
   name: 'checklist',
+  components: {
+    Category
+  },
   firebase: {
     checklists: {
       source: db.ref('/lists'),
