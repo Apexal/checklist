@@ -22,13 +22,15 @@
             a.remove-item(href="#", @click="$emit('remove-item', name, index)", :title="'Remove ' + name + ' item ' + item.name")
               button X
           
-          .item-info(v-if="!editing", :class="{ 'is-done': item.progress == item.count, 'just-viewing': !is_current }")
+          .item-info(v-if="!editing", :class="{ 'is-done': item.progress == item.count || item.progress === -1, 'just-viewing': !is_current }")
             span.flex.inline(v-if="is_current")
-              input(v-if="item.count == 1", @change="$emit('on-progress-update', name, index, $event.target)", type="checkbox", :checked="item.progress !== 0")
-              span.flex.inline(v-else)
-                span.item-count {{ item.progress }}/{{ item.count }}
+              
+              input(v-if="item.count == 1 && item.progress !== -1", @change="$emit('on-progress-update', name, index, $event.target)", type="checkbox", :checked="item.progress !== 0")
+              span.flex.inline(v-else-if="item.progress !== -1")
+                span.item-count(v-if="item.progress !== -1") {{ item.progress }}/{{ item.count }}
                 input.item-progress(type="range", @change="$emit('on-progress-update', name, index, $event.target)", :value="item.progress", min=0, step=1, :max="item.count")
-              span.item-done {{ item.progress == item.count ? '✅' : '❌' }}
+              span.toggle-buying(:class="{ 'is-buying': item.progress === -1 }", @click="$emit('toggle-buying', name, index)") $
+              span.item-done {{ item.progress == item.count || item.progress === -1 ? '✅' : '❌' }}
             span.item-count(v-else, :title="`${item.count} ${item.name}`") {{ item.count }}
 
       p.no-items-warning(v-else) No items yet!
@@ -51,7 +53,9 @@ export default {
   },
   methods: {
     getPercentDone () {
-      return 10;
+      const total = this.getCategoryTotal();
+      const have = this.items.reduce((total, item) => total + (item.progress === -1 ? item.count : item.progress), 0);
+      return Math.round((have / total) * 100);
     },
     getCategoryTotal () {
       return this.items.reduce((total, item) => total + item.count, 0);
@@ -127,6 +131,18 @@ export default {
       .item-info {
         &.just-viewing {
           flex: 1;
+        }
+
+        .toggle-buying {
+          font-weight: bold;
+          font-size: 1.4em;
+          margin: 0px 3px 0px 0px;
+          cursor: pointer;
+        }
+
+        .is-buying {
+          -webkit-text-stroke: #42b883;
+          -webkit-text-stroke-width: 2px;
         }
 
         .item-count {

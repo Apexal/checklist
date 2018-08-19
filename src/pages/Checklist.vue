@@ -23,12 +23,10 @@
     details.help(open)
       summary Help
 
-      p(v-if="!editing") On packing day, keep track of how many of each item you have with the checkboxes and sliders! You can also collapse categories.
-      p(v-else) Add/remove categories and items then save your list as a new one.
+      p(v-if="!is_current && !editing") You are viewing someone else's list. If you want to use this list click #[b TRACK PROGRESS].
+      p(v-else-if="editing") Add/remove categories and items then save your list as a new one.
+      p(v-else) Use the sliders and checkboxes to track what you have packed.  Click the #[b $] to toggle whether you are #[b buying an item locally once you arrive].
 
-      p(v-show="!is_current && changedProgress()")
-        i You are viewing someone else's list. If you want to use this list click #[b TRACK PROGRESS].
-    
     div(v-if="Object.keys(categories).length > 0")
       Category(v-for="(items, name) in categories", 
         :key="name",
@@ -38,6 +36,7 @@
         :items="items",
         @add-item="addItem",
         @remove-item="removeItem",
+        @toggle-buying="toggleBuying"
         @on-progress-update="onProgressUpdate",
         @remove-category="removeCategory")
     p.no-categories-warning(v-else) {{ editing ? 'Add a category above to start!' : 'This checklist is empty!' }}
@@ -175,6 +174,13 @@ export default {
     },
     removeItem (category, itemIndex) {
       this.categories[category].splice(itemIndex, 1);
+    },
+    toggleBuying (category, itemIndex) {
+      if (this.is_current) {
+        const prev = this.categories[category][itemIndex].progress;
+        this.categories[category][itemIndex].progress = prev == -1 ? 0 : -1;
+        this.saveCurrentToLocalStorage();
+      }
     },
     getCategoryTotal (category) {
       return this.categories[category].reduce((total, item) => total + item.count, 0);
