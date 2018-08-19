@@ -9,7 +9,7 @@
     main
       router-view
     footer
-      p Created by #[a(href="https://github.com/Apexal", target="_blank") Frank Matranga '22] under the #[b MIT License]
+      p Created by #[a(href="https://github.com/Apexal", target="_blank") Frank Matranga '22] under the #[b MIT License].
 </template>
 
 <script>
@@ -19,6 +19,7 @@ export default {
 </script>
 
 <style lang="scss">
+// Global styles
 body {
   margin: 0;
   padding: 0;
