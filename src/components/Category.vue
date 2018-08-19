@@ -2,7 +2,7 @@
   .category
     .category-header.flex
       h2.category-name {{ name }}
-      .percentage(v-if="is_current")  {{ getPercentDone(name) }}%
+      .percentage(v-if="is_current && !editing")  {{ getPercentDone(name) }}%
 
       .new-item(v-if="editing")
         input(type="text", @keyup.enter="$emit('add-item', name, new_item, new_count)", :placeholder="'New ' + name + ' item'", v-model="new_item")

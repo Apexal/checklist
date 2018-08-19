@@ -32,9 +32,15 @@
     
     div(v-if="Object.keys(categories).length > 0")
       Category(v-for="(items, name) in categories", 
-        :editing="editing", :is_current="is_current", :name="name", :items="items",
-        @add-item="addItem", @remove-item="removeItem", @on-progress-update="onProgressUpdate", @remove-category="removeCategory",
-        :key="name")
+        :key="name",
+        :editing="editing",
+        :is_current="is_current",
+        :name="name",
+        :items="items",
+        @add-item="addItem",
+        @remove-item="removeItem",
+        @on-progress-update="onProgressUpdate",
+        @remove-category="removeCategory")
     p.no-categories-warning(v-else) {{ editing ? 'Add a category above to start!' : 'This checklist is empty!' }}
 
 </template>
@@ -52,13 +58,7 @@ export default {
     Category
   },
   firebase: {
-    checklists: {
-      source: db.ref('/lists'),
-      readyCallback () {
-        // eslint-disable-next-line
-        console.log('Loaded data from Firebase...');
-      }
-    }
+    checklists: db.ref('/lists'),
   },
   data () {
     return {
@@ -68,8 +68,6 @@ export default {
       loading: true,
       editing: false,
       new_category: '',
-      new_items: {},
-      new_counts: {},
       categories: {},
       original: null
     }; 
@@ -80,16 +78,10 @@ export default {
   methods: {
     onProgressUpdate (category, itemIndex, target) {
       if (this.is_current) {
-        // eslint-disable-next-line
-        console.log(category + " - " + itemIndex + " - " + target.value);
-        // eslint-disable-next-line
-        console.log(target);
-
-        if (target.type === 'checkbox') {
+        if (target.type === 'checkbox')
           this.categories[category][itemIndex].progress = (target.checked ? 1 : 0);
-        } else {
+        else 
           this.categories[category][itemIndex].progress = parseInt(target.value);
-        }
 
         this.saveCurrentToLocalStorage();
       }
@@ -116,6 +108,7 @@ export default {
       alert('Saved! Share the URL to let others use the list.');
       this.$router.push({ path: `/checklist/${new_ref.key}`});
 
+      this.key = new_ref.key;
       this.is_current = true;
       this.saveCurrentToLocalStorage();
       this.original = this.encoded;
@@ -149,19 +142,15 @@ export default {
         categories[category_name] = categories[category_name].filter(item => item !== null);
 
         Vue.set(this.categories, category_name, categories[category_name]);
-        Vue.set(this.new_items, category_name, '');
-        Vue.set(this.new_counts, category_name, 1);
       }
     },
     addCategory (category_name) {
       category_name = category_name.trim();
-      
+
       // Validate
       if (category_name.length == 0 || category_name.length > 100 ||Object.keys(this.categories).includes(category_name)) return;
-      
+
       Vue.set(this.categories, category_name, []);
-      Vue.set(this.new_items, category_name, '');
-      Vue.set(this.new_counts, category_name, 1);
 
       // Empty input
       this.new_category = '';
