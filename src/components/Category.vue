@@ -12,7 +12,7 @@
           button X
 
     details.items(open)
-      summary {{ items.length  }} total
+      summary {{ getCategoryTotal()  }} total
       ul(v-if="items.length > 0")
         li.item(v-for="(item, index) in items")
           b.item-name {{ item.name }}
@@ -52,6 +52,9 @@ export default {
   methods: {
     getPercentDone () {
       return 10;
+    },
+    getCategoryTotal () {
+      return this.items.reduce((total, item) => total + item.count, 0);
     }
   },
   computed: {
