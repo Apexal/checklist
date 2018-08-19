@@ -2,6 +2,7 @@
 #checklist
   #loading(v-if="loading")
     h1 Loading list...
+
   .categories(v-else, :class="{ 'is-editing': editing }")
     .categories-header.flex
       h2.title {{ is_current ? '⭐ Your ' : '' }}{{ editing ? 'Editing' : ''}} {{ Object.keys(categories).length }} Categories
@@ -15,7 +16,7 @@
       button(title="Go back to homepage") Home
     
     button(v-show="!creating && saved", :title="editing ? 'View and use the list' : 'Edit the list'", @click="editing = !editing") {{ editing ? 'View' : 'Edit' }}
-    button(v-show="!creating && !this.is_current", @click="setCurrent") Track Progress
+    button(v-show="!editing && !creating && !is_current", @click="setCurrent") Track Progress
 
     button.warning(v-show="!saved", @click="saveToFirebase") Save
     hr.separator(style="margin-top: 10px")
@@ -30,39 +31,10 @@
         i You are viewing someone else's list. If you want to use this list click #[b TRACK PROGRESS].
     
     div(v-if="Object.keys(categories).length > 0")
-      .category(v-show="is_current || editing", v-for="(value, key) in categories")
-        .category-header.flex
-          h2.category-name {{ key }}
-          .new-item(v-if="editing")
-            input(type="text", @keyup.enter="addItem(key, new_items[key], new_counts[key])", :placeholder="'New ' + key + ' item'", v-model="new_items[key]")
-            input(type="number", @keyup.enter="addItem(key, new_items[key], new_counts[key])", value=1, min=1, max=100, v-model.number="new_counts[key]")
-            button(type="button", @click="addItem(key, new_items[key], new_counts[key])") Add
-            a.remove-item(href="#", @click="removeCategory(key)", :title="'Remove category ' + key")
-              button X
-          .percentage(v-else-if="is_current")  {{ getPercentDone(key) }}%
-
-        details.items(open)
-          summary {{ getCategoryTotal(key)  }} total
-          ul(v-if="categories[key].length > 0")
-            li.item(v-for="item, index in categories[key]")
-              b.item-name {{ item.name }}
-              
-              div(v-if="editing")
-                input(type="number", min=1, v-model.number="categories[key][index].count", max=100)
-                a.remove-item(href="#", @click.prevent="removeItem(key, index)", :title="'Remove ' + key + ' item ' + item.name")
-                  button X
-              .item-info(v-else, :class="{ 'is-done': item.progress == item.count, 'just-viewing': !is_current }")
-                span.flex.inline(v-if="is_current")
-                  input(v-if="item.count == 1", @change="onProgressUpdate", type="checkbox", :true-value="1", :false-value="0", v-model.number="categories[key][index].progress")
-                  span.flex.inline(v-else)
-                    span.item-count {{ item.progress }}/{{ item.count }}
-                    input.item-progress(type="range", @change="onProgressUpdate", v-model.number="categories[key][index].progress", value=0, min=0, step=1, :max="item.count")
-                  span.item-done {{ item.progress == item.count ? '✅' : '❌' }}
-                span(v-else)
-                  span.item-count {{ item.count }}
-          p.no-items-warning(v-else) No items yet!
-    
-      Category(v-show="!is_current && !editing", v-for="(items, name) in categories", :name="name", :items="items", :key="name")
+      Category(v-for="(items, name) in categories", 
+        :editing="editing", :is_current="is_current", :name="name", :items="items",
+        @add-item="addItem", @remove-item="removeItem", @on-progress-update="onProgressUpdate", @remove-category="removeCategory",
+        :key="name")
     p.no-categories-warning(v-else) {{ editing ? 'Add a category above to start!' : 'This checklist is empty!' }}
 
 </template>
@@ -106,8 +78,19 @@ export default {
     this.load();
   },
   methods: {
-    onProgressUpdate () {
-      if (this.changedProgress() && this.is_current) {
+    onProgressUpdate (category, itemIndex, target) {
+      if (this.is_current) {
+        // eslint-disable-next-line
+        console.log(category + " - " + itemIndex + " - " + target.value);
+        // eslint-disable-next-line
+        console.log(target);
+
+        if (target.type === 'checkbox') {
+          this.categories[category][itemIndex].progress = (target.checked ? 1 : 0);
+        } else {
+          this.categories[category][itemIndex].progress = parseInt(target.value);
+        }
+
         this.saveCurrentToLocalStorage();
       }
     },
@@ -159,11 +142,12 @@ export default {
     saveCurrentToLocalStorage () {
       localStorage.setItem('checklist-key', this.key);
       localStorage.setItem('checklist-categoriesJSON', JSON.stringify(this.categories));
-      // eslint-disable-next-line
-      console.log("Saved checklist because it is current");
     },
     setCategories (categories) {
-      for(const category_name in categories) { 
+      for(const category_name in categories) {
+        // Account for any null items due to direct Firebase item deletions
+        categories[category_name] = categories[category_name].filter(item => item !== null);
+
         Vue.set(this.categories, category_name, categories[category_name]);
         Vue.set(this.new_items, category_name, '');
         Vue.set(this.new_counts, category_name, 1);
@@ -211,7 +195,7 @@ export default {
     }
   },
   computed: {
-    encoded () { 
+    encoded () {
       const data = JSON.parse(JSON.stringify(this.categories));
       for(let key in data) {
         data[key].forEach(item => item.progress = 0);
@@ -228,7 +212,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style  lang="scss">
 .title {
   margin-bottom: 5px;
 }
@@ -278,99 +262,6 @@ export default {
     background-color: darkred;
     padding-left: 8px !important;
     padding-right: 8px !important;
-  }
-
-  .category {
-    .category-header {
-      background-color: #42b883;
-      border-radius: 10px 10px 0 0;
-      padding: 10px;
-      color: white;
-
-      align-items: center;
-
-      .category-name {
-        flex: 1;
-        margin: 0;
-        text-align: left;
-      }
-
-      .category-total {
-        margin-left: 7px;
-        font-size: 0.8em;
-        color: white;
-      }
-    }
-    summary {
-      background-color: #f3f3f3;
-    }
-    .items {
-      border: 1px solid #42b883;
-      border-top: 1px solid #42b883;
-      border-bottom-left-radius: 10px;
-      border-bottom-right-radius: 10px;
-
-      > ul {
-        padding-left: 10px;
-        padding-right: 10px;
-        margin: 5px 0;
-      }
-
-      .item {
-        display: flex;
-        align-items: center;
-
-        .item-name {
-          flex: 1;
-          text-align: left;
-        }
-
-        .remove-item {
-          button {
-            padding-left: 10px;
-            padding-right: 10px;
-          }
-        }
-
-        .item-info {
-          &.just-viewing {
-            flex: 1;
-          }
-
-          .item-count {
-            flex: 1;
-            margin-right: 5px;
-          }
-          .item-progress {
-            flex: 1;
-          }
-
-          .item-done {
-            font-size: 1.4em;
-            color: red;
-          }
-        }
-
-        .is-done {
-          .item-count {
-            color: #42b883;
-            font-weight: bold;
-          }
-
-          .item-done {
-            color: #42b883;
-          }
-        }
-      }
-
-      .no-items-warning {
-        margin: 10px;
-        font-style: italic;
-        color: #68829c;
-      }
-    }
-
-    margin-bottom: 40px;
   }
 }
 
