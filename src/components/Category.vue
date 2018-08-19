@@ -29,7 +29,7 @@
               span.flex.inline(v-else-if="item.progress !== -1")
                 span.item-count(v-if="item.progress !== -1") {{ item.progress }}/{{ item.count }}
                 input.item-progress(type="range", @change="$emit('on-progress-update', name, index, $event.target)", :value="item.progress", min=0, step=1, :max="item.count")
-              span.toggle-buying(:class="{ 'is-buying': item.progress === -1 }", @click="$emit('toggle-buying', name, index)") $
+              span.toggle-buying(:title="`Toggle buying ${item.name} locally.`", :class="{ 'is-buying': item.progress === -1 }", @click="$emit('toggle-buying', name, index)") $
               span.item-done {{ item.progress == item.count || item.progress === -1 ? '✅' : '❌' }}
             span.item-count(v-else, :title="`${item.count} ${item.name}`") {{ item.count }}
 
