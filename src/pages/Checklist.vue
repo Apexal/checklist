@@ -25,7 +25,7 @@
 
       p(v-if="!is_current && !editing") You are viewing someone else's list. If you want to use this list click #[b TRACK PROGRESS].
       p(v-else-if="editing") Add/remove categories and items then save your list as a new one.
-      p(v-else) Use the sliders and checkboxes to track what you have packed.  Click the #[b $] to toggle whether you are #[b buying an item locally once you arrive].
+      p(v-else-if="is_current && !editing") Use the sliders and checkboxes to track what you have packed.  Click the #[b $] to toggle whether you are #[b buying an item locally once you arrive].
 
     div(v-if="Object.keys(categories).length > 0")
       Category(v-for="(items, name) in categories", 
