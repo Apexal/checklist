@@ -116,6 +116,8 @@ export default {
     },
     loadFromFirebase (key) {
       this.$firebaseRefs.checklists.child(key).once('value', snapshot => {
+        if (!snapshot.exists()) return this.$router.push({ path: '/' })
+        
         this.setCategories(snapshot.val());
         this.loading = false;
         this.original = this.encoded;

@@ -8,7 +8,8 @@ import Browse from './pages/Browse.vue';
 const routes = [
   { path: '/', component: Home },
   { path: '/checklist/browse', component: Browse },
-  { path: '/checklist/:key', component: Checklist }
+  { path: '/checklist/:key', component: Checklist },
+  { path: '*', redirect: '/' }
 ];
 
 export default new VueRouter({
