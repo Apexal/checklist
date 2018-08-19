@@ -11,15 +11,14 @@
         input(type="text", placeholder="New category", v-model="new_category", @keyup.enter="addCategory(new_category)", minlength=0, maxlength=100)
         button(type="button", @click="addCategory(new_category)") Add
     
-    hr.separator(style="margin-bottom: 10px")
-    router-link(to="/")
-      button(title="Go back to homepage") Home
-    
-    button(v-show="!creating && saved", :title="editing ? 'View and use the list' : 'Edit the list'", @click="editing = !editing") {{ editing ? 'View' : 'Edit' }}
-    button(v-show="!editing && !creating && !is_current", @click="setCurrent") Track Progress
-
-    button.warning(v-show="!saved", @click="saveToFirebase") Save
-    hr.separator(style="margin-top: 10px")
+    .links
+      hr.separator(style="margin-bottom: 10px")
+      router-link(to="/")
+        button(title="Go back to homepage") Home
+      button(v-show="!creating && saved", :title="editing ? 'View and use the list' : 'Edit the list'", @click="editing = !editing") {{ editing ? 'View' : 'Edit' }}
+      button(v-show="!editing && !creating && !is_current", @click="setCurrent") Track Progress
+      button.warning(v-show="!saved", @click="saveToFirebase") Save
+      hr.separator(style="margin-top: 10px")
 
     details.help(open)
       summary Help
@@ -42,7 +41,6 @@
         @on-progress-update="onProgressUpdate",
         @remove-category="removeCategory")
     p.no-categories-warning(v-else) {{ editing ? 'Add a category above to start!' : 'This checklist is empty!' }}
-
 </template>
 
 <script>
