@@ -15,7 +15,7 @@
 import db from '../firebase.js';
 
 export default {
-  name: 'browse',
+  name: 'Browse',
   firebase: {
     checklists: {
       source: db.ref('/lists'),

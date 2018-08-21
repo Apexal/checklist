@@ -50,7 +50,7 @@ import db from '../firebase.js';
 import Category from '../components/Category.vue';
 
 export default {
-  name: 'checklist',
+  name: 'Checklist',
   components: {
     Category
   },

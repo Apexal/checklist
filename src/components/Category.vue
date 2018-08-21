@@ -38,12 +38,12 @@
 
 <script>
 export default {
-  name: 'category',
+  name: 'Category',
   props: {
-    is_current: Boolean,
-    editing: Boolean,
-    name: String,
-    items: Array
+    is_current: { type: Boolean, default: false },
+    editing: { type: Boolean, default: false },
+    name: { type: String, default: 'Unnamed Category' },
+    items: { type: Array, default: () => [] } 
   },
   data () {
     return {
